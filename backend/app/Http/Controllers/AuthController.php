@@ -15,8 +15,6 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
-
-
 class AuthController extends Controller
 {
     public function register(Request $request)
@@ -107,14 +105,13 @@ class AuthController extends Controller
 
         $userAuthenticated = $user;
 
-        if (!$user || !Hash::check($data['password'], $user->password)) {
+        if (!$user || !Hash::check($data['password'], $user->password)){
             return response([
                 'success' => false,
                 'status' => '401',
                 'message' => 'email or password is incorrect!'
             ], 401);
-        }
-        ;
+        };
 
         $userAuthenticated = $user->id;
 
@@ -149,7 +146,6 @@ class AuthController extends Controller
     public function findUserEmail(Request $request)
     {
         $request->validate(['email' => 'required|email']);
-
         $user = User::where('email', $request->email)->first();
 
         if (!$user) {
@@ -229,7 +225,6 @@ class AuthController extends Controller
 
     public function index()
     {
-
         $users = User::all();
         $personal_access_token = DB::table('personal_access_tokens')->get();
 
@@ -252,7 +247,6 @@ class AuthController extends Controller
         $user = User::where('email', $data['email'])->first();
 
         $userAuthenticated = $user;
-
         $userAuthenticated = $user->id;
 
         $token = $user->createToken('m4rkbellofullstack')->plainTextToken;
