@@ -1,43 +1,28 @@
 import React, { useRef, useEffect } from 'react';
+import { connect } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
-// import { connect } from 'react-redux';
 import QrScanner from 'qr-scanner';
 import 'qr-scanner/qr-scanner-worker.min.js';
-// import { qRCodeIsAuthenticated } from '../../redux/actions/userActions';
+import { useDispatch } from 'react-redux';
+import { postAndResponseQRCode } from '../../redux/actions/userActions';
 
-function QrCodeLoginAuthentication() {
+function QrCodeLoginAuthentication({postAndResponseQRCode}) {
   const videoRef = useRef(null);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-
-useEffect(() => {
-  const scanner = new QrScanner(videoRef.current, result => {
-    console.log("GANA NA KOL", result);
-
-    // Add a delay of 3 seconds (adjust as needed)
-    setTimeout(() => {
-      // Make a POST request to the backend with the scanned QR code value
-      api.post('/scan-qrcode', { email: result })
-        .then(response => {
-          // Handle response if needed
-          console.log(response.data);
-          window.location.reload();
-          navigate("/home");
-        })
-        .catch(error => {
-          // Handle error if needed
-          console.error(error);
-        });
-    }, 10000); // 3000 milliseconds = 3 seconds
-  });
-
-  scanner.start();
-
-  return () => {
-    scanner.destroy();
-  };
-}, []);
-
+  useEffect(() => {
+    const scanner = new QrScanner(videoRef.current, result => {
+      dispatch(postAndResponseQRCode(result));
+      console.log("GANA NA KOL", result);
+      window.location.reload();
+      navigate("/home");
+    });
+    scanner.start();
+    return () => {
+      scanner.destroy();
+    };
+  }, [dispatch]);
 
   return (
     <div className="hero min-h-screen bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
@@ -77,5 +62,4 @@ useEffect(() => {
   );
 }
 
-// export default connect(null, {qRCodeIsAuthenticated})(QrCodeLoginAuthentication);
-export default QrCodeLoginAuthentication;
+export default connect(null, { postAndResponseQRCode })(QrCodeLoginAuthentication);
