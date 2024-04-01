@@ -10,29 +10,6 @@ function QrCodeLoginAuthentication() {
   const navigate = useNavigate();
 
 
-  {/**
-  useEffect(() => {
-    const scanner = new QrScanner(videoRef.current, async (result) => {
-      console.log("Scanned QR code:", result);
-      try {
-        const postAndResponseQRCodeScan = await qRCodeIsAuthenticated({ email: result });
-        console.log("RESPONSE FROM QRCODE SCAN!", postAndResponseQRCodeScan);
-        window.location.reload();
-        navigate("/home");
-      } catch (error) {
-        console.error(error);
-        // Handle error, e.g., show a toast or modal
-      }
-    });
-  
-    scanner.start();
-  
-    return () => {
-      scanner.destroy();
-    };
-  }, []);
-*/}
-
 useEffect(() => {
   const scanner = new QrScanner(videoRef.current, result => {
     console.log("GANA NA KOL", result);
