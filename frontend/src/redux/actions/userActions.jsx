@@ -115,7 +115,7 @@ export const loginUserPost = (userData) => {
 // export const postAndResponseQRCode = (email) => {
 //   return async (dispatch) => {
 //     try {
-//       const response = await fetch('/api/scan-qrcode', {
+//       const response = await api.post('/api/scan-qrcode', {
 //         method: 'POST',
 //         body: JSON.stringify({ email }),
 //       });

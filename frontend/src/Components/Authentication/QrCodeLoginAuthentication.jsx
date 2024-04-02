@@ -1,52 +1,67 @@
-import React, { useRef, useEffect } from 'react';
-import { connect } from 'react-redux';
+import React, { useRef, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import QrScanner from 'qr-scanner';
 import 'qr-scanner/qr-scanner-worker.min.js';
-import { useDispatch } from 'react-redux';
-import { postAndResponseQRCode } from '../../redux/actions/userActions';
 
 function QrCodeLoginAuthentication() {
   const videoRef = useRef(null);
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const [debouncedScan, setDebouncedScan] = useState(null);
 
   useEffect(() => {
     const scanner = new QrScanner(videoRef.current, async email => {
       try {
-        const response = await fetch('/api/scan-qrcode', {
-          method: 'POST',
-          body: JSON.stringify({ email }),
+        // Update the debounced scan function
+        setDebouncedScan(() => {
+          return async () => {
+            try {
+              // Actual fetch request
+              const response = await fetch('http://127.0.0.1:8000/api/scan-qrcode', {
+                method: 'POST',
+                body: JSON.stringify({ email }),
+              });
+
+              if (!response.ok) {
+                throw new Error(`API request failed with status ${response.status}`);
+              }
+
+              const data = await response.json();
+
+              // Handle successful response (e.g., login user, redirect)
+              console.log("QR Code Authentication Successful:", data);
+              navigate('/dashboard'); // Replace with your desired redirect
+            } catch (error) {
+              // Handle errors (e.g., display error messages)
+              console.error("QR Code Authentication Error:", error);
+              // Check for potential 302 Found error
+              if (error.message.includes('302 Found')) {
+                alert("Authentication failed. The backend might be redirecting the request. Please check your backend logic.");
+              } else {
+                // Display generic error message for other errors
+                alert("An error occurred during authentication. Please try again.");
+              }
+            }
+          };
         });
-  
-        if (!response.ok) {
-          throw new Error(`API request failed with status ${response.status}`);
-        }
-  
-        const data = await response.json();
 
-
-        if(data.length > 0){
-          window.location.reload();
-          navigate("/home");
-        } 
-        // Handle successful response (e.g., login user, redirect)
-        console.log("QR Code Authentication Successful:", data);
-        navigate('/dashboard'); // Example redirect on success
+        // Call the debounced function after 500 milliseconds
+        setTimeout(() => {
+          if (debouncedScan) {
+            debouncedScan();
+          }
+        }, 500);
       } catch (error) {
-        // Handle errors (e.g., display error messages)
-        console.error("QR Code Authentication Error:", error);
+        console.error("QR Code Scanner Error:", error);
         // You can display an error message to the user here
       }
     });
-  
+
     scanner.start();
-  
+
     return () => {
       scanner.destroy();
     };
-  }, []);
-  
+  }, [debouncedScan]);
 
   return (
     <div className="hero min-h-screen bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
@@ -86,5 +101,4 @@ function QrCodeLoginAuthentication() {
   );
 }
 
-// export default connect(null, { postAndResponseQRCode })(QrCodeLoginAuthentication);
 export default QrCodeLoginAuthentication;
