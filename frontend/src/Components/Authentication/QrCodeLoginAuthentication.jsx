@@ -5,8 +5,10 @@ import QrScanner from 'qr-scanner';
 import 'qr-scanner/qr-scanner-worker.min.js';
 import { useDispatch } from 'react-redux';
 import { postAndResponseQRCode } from '../../redux/actions/userActions';
+import { useForm } from 'react-hook-form'; // Import for form validation
 
-function QrCodeLoginAuthentication({postAndResponseQRCode}) {
+function QrCodeLoginAuthentication({ postAndResponseQRCode }) {
+  const { register, handleSubmit, formState: { errors } } = useForm();
   const videoRef = useRef(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -15,14 +17,18 @@ function QrCodeLoginAuthentication({postAndResponseQRCode}) {
     const scanner = new QrScanner(videoRef.current, result => {
       dispatch(postAndResponseQRCode(result));
       console.log("GANA NA KOL", result);
-      window.location.reload();
-      navigate("/home");
+      window.location.reload(); // Replace with appropriate redirection
+      navigate("/home"); // Optional navigation after successful login
     });
     scanner.start();
     return () => {
       scanner.destroy();
     };
   }, [dispatch]);
+
+  const onSubmit = (data) => {
+    postAndResponseQRCode(data.email);
+  };
 
   return (
     <div className="hero min-h-screen bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
@@ -41,20 +47,33 @@ function QrCodeLoginAuthentication({postAndResponseQRCode}) {
                 playsInline
                 muted
                 style={{ objectFit: 'cover' }}
-              ></video>
+              />
             </div>
-            <div className='flex justify-center'>
-              <label className="text-2xl mx-2">
-                <Link to="/login" className="label-text-alt link link-hover">
-                  Login instead?
-                </Link>
-              </label>
-              <label className="text-3xl mx-2">
-                <Link to="/register" className="label-text-alt link link-hover">
-                  Create an Account?
-                </Link>
-              </label>
-            </div>
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <div className='flex justify-center'>
+                <label className="text-2xl mx-2">
+                  <Link to="/login" className="label-text-alt link link-hover">
+                    Login instead?
+                  </Link>
+                </label>
+                <label className="text-3xl mx-2">
+                  <Link to="/register" className="label-text-alt link link-hover">
+                    Create an Account?
+                  </Link>
+                </label>
+              </div>
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text">Email</span>
+                </label>
+                <input
+                  type="email"
+                  {...register('email', { required: true })} // Validation using react-hook-form
+                />
+                {errors.email && <span className="text-error">Please enter a valid email.</span>}
+              </div>
+              <button className="btn btn-primary btn-block mt-4">Submit</button>
+            </form>
           </div>
         </div>
       </div>
