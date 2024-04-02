@@ -143,23 +143,23 @@ export const loginUserPost = (userData) => {
 // };
 
 
-export const postAndResponseQRCode = (email) => {
-  return async (dispatch) => {
-    dispatch({ type: SCAN_QRCODE_REQUEST });
-    try {
-      const response = await fetch('/api/scan-qrcode', {
-        method: 'POST',
-        body: JSON.stringify({ email }),
-      });
-      const data = await response.json();
-      dispatch({ type: SCAN_QRCODE_SUCCESS, payload: data });
-      // Handle successful response (e.g., login user, redirect)
-    } catch (error) {
-      dispatch({ type: SCAN_QRCODE_FAILURE, payload: error.message });
-      // Handle errors (e.g., display error messages)
-    }
-  };
-};
+// export const postAndResponseQRCode = (email) => {
+//   return async (dispatch) => {
+//     dispatch({ type: SCAN_QRCODE_REQUEST });
+//     try {
+//       const response = await fetch('/api/scan-qrcode', {
+//         method: 'POST',
+//         body: JSON.stringify({ email }),
+//       });
+//       const data = await response.json();
+//       dispatch({ type: SCAN_QRCODE_SUCCESS, payload: data });
+//       // Handle successful response (e.g., login user, redirect)
+//     } catch (error) {
+//       dispatch({ type: SCAN_QRCODE_FAILURE, payload: error.message });
+//       // Handle errors (e.g., display error messages)
+//     }
+//   };
+// };
 
 export const findUserEmailPost = (userData) => {
   return async (dispatch) => {

@@ -24,6 +24,12 @@ function QrCodeLoginAuthentication() {
         }
   
         const data = await response.json();
+
+
+        if(data.length > 0){
+          window.location.reload();
+          navigate("/home");
+        } 
         // Handle successful response (e.g., login user, redirect)
         console.log("QR Code Authentication Successful:", data);
         navigate('/dashboard'); // Example redirect on success
