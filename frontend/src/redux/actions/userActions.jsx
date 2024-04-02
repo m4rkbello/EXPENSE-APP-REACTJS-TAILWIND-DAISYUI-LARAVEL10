@@ -112,23 +112,51 @@ export const loginUserPost = (userData) => {
 };
 
 
+// export const postAndResponseQRCode = (email) => {
+//   return async (dispatch) => {
+//     try {
+//       const response = await fetch('/api/scan-qrcode', {
+//         method: 'POST',
+//         body: JSON.stringify({ email }),
+//       });
+//       const data = await response.json();
+
+//       // Dispatch a success action with response data
+//       dispatch({ type: 'QR_CODE_SUCCESS', payload: data });
+//       console.log("RESPONSE FROM QRCODE", data.token);
+
+//       const { token } = data;
+
+//       // Save token to localStorage
+//       localStorage.setItem('M4rkbelloFullstackPersonalAccessToken', token);
+
+//       // Save token to cookie
+//       document.cookie = `M4rkbelloFullstackPersonalAccessToken=${token}; expires=${new Date(Date.now() + 86400 * 1000).toUTCString()}; path=/`;
+//       document.cookie = `M4rkBelloFullstackTime=${token}; expires=${new Date(Date.now() + 86400 * 1000).toUTCString()}; path=/`;
+//       // Handle any additional logic or state updates here
+//     } catch (error) {
+//       // Dispatch an error action with error details
+//       dispatch({ type: 'QR_CODE_FAILURE', payload: error.message });
+//       console.log('Login error:', error);
+//     }
+//   };
+// };
+
+
 export const postAndResponseQRCode = (email) => {
   return async (dispatch) => {
     dispatch({ type: SCAN_QRCODE_REQUEST });
     try {
-      const response = await api.post('/api/scan-qrcode', email);
-      dispatch({ type: SCAN_QRCODE_SUCCESS, payload: response.data });
-      console.log("RESPONSE FROM QRCODE", response.data.token);
-
-      const { token } = response.data;
-      // Save token to localStorage
-      localStorage.setItem('M4rkbelloFullstackPersonalAccessToken', token);
-      // Save token to cookie
-      document.cookie = `M4rkbelloFullstackPersonalAccessToken=${token}; expires=${new Date(Date.now() + 86400 * 1000).toUTCString()}; path=/`;
-      document.cookie = `M4rkBelloFullstackTime=${token}; expires=${new Date(Date.now() + 86400 * 1000).toUTCString()}; path=/`;
+      const response = await fetch('/api/scan-qrcode', {
+        method: 'POST',
+        body: JSON.stringify({ email }),
+      });
+      const data = await response.json();
+      dispatch({ type: SCAN_QRCODE_SUCCESS, payload: data });
+      // Handle successful response (e.g., login user, redirect)
     } catch (error) {
       dispatch({ type: SCAN_QRCODE_FAILURE, payload: error.message });
-      console.log('Login error:', error);
+      // Handle errors (e.g., display error messages)
     }
   };
 };

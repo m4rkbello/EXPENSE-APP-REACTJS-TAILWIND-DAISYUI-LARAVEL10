@@ -6,23 +6,41 @@ import 'qr-scanner/qr-scanner-worker.min.js';
 import { useDispatch } from 'react-redux';
 import { postAndResponseQRCode } from '../../redux/actions/userActions';
 
-function QrCodeLoginAuthentication({postAndResponseQRCode}) {
+function QrCodeLoginAuthentication() {
   const videoRef = useRef(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const scanner = new QrScanner(videoRef.current, result => {
-      dispatch(postAndResponseQRCode(result));
-      console.log("GANA NA KOL", result);
-      window.location.reload();
-      navigate("/home");
+    const scanner = new QrScanner(videoRef.current, async email => {
+      try {
+        const response = await fetch('/api/scan-qrcode', {
+          method: 'POST',
+          body: JSON.stringify({ email }),
+        });
+  
+        if (!response.ok) {
+          throw new Error(`API request failed with status ${response.status}`);
+        }
+  
+        const data = await response.json();
+        // Handle successful response (e.g., login user, redirect)
+        console.log("QR Code Authentication Successful:", data);
+        navigate('/dashboard'); // Example redirect on success
+      } catch (error) {
+        // Handle errors (e.g., display error messages)
+        console.error("QR Code Authentication Error:", error);
+        // You can display an error message to the user here
+      }
     });
+  
     scanner.start();
+  
     return () => {
       scanner.destroy();
     };
-  }, [dispatch]);
+  }, []);
+  
 
   return (
     <div className="hero min-h-screen bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
@@ -41,7 +59,7 @@ function QrCodeLoginAuthentication({postAndResponseQRCode}) {
                 playsInline
                 muted
                 style={{ objectFit: 'cover' }}
-              ></video>
+              />
             </div>
             <div className='flex justify-center'>
               <label className="text-2xl mx-2">
@@ -62,4 +80,5 @@ function QrCodeLoginAuthentication({postAndResponseQRCode}) {
   );
 }
 
-export default connect(null, { postAndResponseQRCode })(QrCodeLoginAuthentication);
+// export default connect(null, { postAndResponseQRCode })(QrCodeLoginAuthentication);
+export default QrCodeLoginAuthentication;
