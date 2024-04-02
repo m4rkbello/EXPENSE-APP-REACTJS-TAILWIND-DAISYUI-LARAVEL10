@@ -94,5 +94,7 @@ module.exports = {
 21. INSTALL REACTJS QRCODE SCANNER 
 ->npm i use-scan-detection
 22. QRCODE READER FOR simplesoftwareio/simple-qrcode 
-->npm i qr-scanner
+->npm i qr-scanner 
+23. ADD REACT-USE-FORM for using onSubmit 
+->npm i react-hook-form
 
